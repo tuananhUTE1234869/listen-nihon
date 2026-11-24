@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=egde">
+        <link rel="stylesheet" href="style.css">
+        <title>KAIWA</title>
+        <style>
+            .item {
+                box-sizing: border-box;
+                margin: 0 3%;
+                display: flex;
+                width: 100%;
+                height: 100%;
+                justify-content: center;
+                align-items: center;
+                font-size: 20px;
+            }
+            .hidden {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: antiquewhite;
+                z-index: 10;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="title"><h1>LUYỆN TEST N3 LẦN 1</h1></div>
+        <div class="container">
+            <div class="box-title">
+                <h3>LYRIS</h3>
+            </div>
+            <div class="box-text">
+                <div class="text-run" id="text-run">
+                    <!-- thông tin dưới js -->
+                </div>
+            </div>
+            <div class="box-button">
+                <button class="button" id="back" onclick="BackAudio()">BACK</button>
+                <button class="button" id="repeat" onclick="RepeatAudio()">REPEAT</button>
+                <button class="button" id="next" onclick="NextAudio()">NEXT</button>
+            </div>
+            <div class="set-speed"> 
+                <div class="dauvao speed-box">
+                    <div class="speed-title">Nhập tốc độ phát mong muốn</div>
+                    <div class="speed-input"><input type="number" id="speed-input" value="1" step="0.1" min="0.5" max="3.0"></div>
+                </div>
+            </div>
+        </div>
+        <!-- API -->
+       <script>
+
+            let html= "";
+            let count = 0;
+            let count_text = 0;
+            let lyris_data ="";
+            let currentSpeed = 1; // Lưu tốc độ mặc định ban đầu
+            const btn_next = document.getElementById('next');
+            const btn_back = document.getElementById('back');
+            const btn_repeat = document.getElementById('repeat');
+            const speed_input = document.getElementById('speed-input');
+
+            const hidden = document.getElementById('text-run');
+
+            hidden.addEventListener("click", function(){
+                document.querySelector('.hidden').style.display="none";
+            })
+
+
+
+            const ArrayLyris = [
+                {stt: "1", lyris: "自己紹介をお願いします" },
+                {stt: "2", lyris: "大学はどこですか. 何を勉強しましたか" },
+                {stt: "3", lyris: "どうしてKAIZEN学校をえらびましたか" },
+                {stt: "4", lyris: "日本でどのくらい働きますか。どうしてですか。" },
+                {stt: "5", lyris: "将来、日本でどんな仕事がしたいですか" },
+                {stt: "6", lyris: "" },
+                {stt: "7", lyris: "" },
+                {stt: "8", lyris: "" },
+                {stt: "9", lyris: "" },
+                {stt: "10", lyris: "" },
+                {stt: "11", lyris: "" },
+                {stt: "12", lyris: "" },
+                {stt: "13", lyris: "" },
+                {stt: "14", lyris: "" },
+                {stt: "15", lyris: "" },
+                {stt: "16", lyris: "" },
+                {stt: "17", lyris: "" },
+                {stt: "18", lyris: "" },
+                {stt: "19", lyris: "" },
+                {stt: "20", lyris: "" },
+                {stt: "21", lyris: "" },
+                {stt: "22", lyris: "" },
+
+            ];
+
+            // điếm phần tử của lyris
+            let a = ArrayLyris.length;
+            console.log(a);
+
+            // hàm thay đổi lyris theo audio
+            function change_lyris_follow_audio(text_data){
+                //reset lại html js
+                let html= "";
+            
+                // đặt mới
+                html += `
+                    <div class="text-lyris item">${text_data}</div>
+                    <div class="hidden" id="hidden"></div>
+                `;
+                    
+                document.getElementById("text-run").innerHTML = html;
+
+            }
+
+            
+
+            // hàm nhập tốc độ của audio 
+
+            function SpeedAudio(){
+                speed_input.addEventListener("input", function(){
+                    const val = parseFloat(this.value);
+
+                    // Chỉ cập nhật khi số hợp lệ (từ 0.5 đến 4.0)
+                    if (!isNaN(val) && val >= 0.5 && val <= 4.0) {
+                        currentSpeed = val;
+
+                        // // Cập nhật ngay lập tức cho tất cả các file trong mảng audio
+                        // for (let i = 0; i < audio.length; i++) {
+                        //     audio[i].playbackRate = currentSpeed;
+                        // }
+                    }
+                    
+                })
+                console.log("speed hiện tại:", currentSpeed);
+            }
+
+
+
+
+
+            // điếm số lượng file mp3 trong foder bài kiểm tra lần 1 
+            async function countMp3Files(folderPath = "mp3/N3_test1") {
+
+            while (true) {
+                const nextIndex = count + 1;
+                try {
+                // Dùng method HEAD để chỉ kiểm tra file có tồn tại hay không (không tải cả file nhạc)
+                const response = await fetch(`${folderPath}/${nextIndex}.mp3`, { method: 'HEAD' });
+
+                if (response.ok) {
+                    count++;
+                } else {
+                    break; // Dừng đếm khi không tìm thấy file tiếp theo
+                }
+                } catch (error) {
+                break;
+                }
+            }
+            console.log(`Tổng số file mp3 hiện tại: N3 - test lần 1 là: ${count}`);
+            return count;
+            }
+
+            // Gọi hàm đếm cho thư mục của bạn
+            countMp3Files('mp3/N3_test1');
+
+
+            // tiếp tục phát audio tiếp theo ---------------------------------------------------------------------------------------------------------------------------------------
+            function NextAudio() {
+                SpeedAudio();
+                change_lyris_follow_audio();
+                count_text = count_text + 1;
+                if (count_text > count ){
+                    count_text = 1;
+                }
+
+                let audio=[];
+                for (i=0; i<count; i++){
+                    audio[i] = new Audio(`mp3/N3_test1/${i+1}.mp3`);
+
+                    audio[i].onended = () =>{
+                        btn_next.disabled = false;
+                        btn_back.disabled = false;
+                        btn_repeat.disabled = false;
+
+                        btn_next.style.backgroundColor="";
+                    }
+                    audio[i].playbackRate = currentSpeed;
+
+                }
+
+                // khóa nút next và chờ gỡ (vì sợ nhấn bị lập)
+                btn_next.disabled = true;
+                btn_back.disabled = true;
+                btn_repeat.disabled = true;
+
+                btn_next.style.backgroundColor="red";
+                console.log(count_text);
+
+                // Đợi 2000ms (2 giây) rồi mới phát
+                    setTimeout(() => {
+                        audio[count_text-1].play().catch(error => {
+                            console.error("Không thể phát âm thanh:", error);
+                            // Mở khóa lại nút nếu xảy ra lỗi (ví dụ sai đường dẫn file)
+                            btn.disabled = false;
+                        });
+                    }, 1000);
+
+
+
+                // gọi dữ liệu ra follow theo audio ra để in ra wed
+                lyris_data = ArrayLyris[count_text-1].lyris;
+                change_lyris_follow_audio(lyris_data);
+            }
+
+            // quay lại audio trước đó ---------------------------------------------------------------------------------------------------------------------------------------
+            function BackAudio() {
+                SpeedAudio();
+                count_text = count_text - 1;
+                if (count_text <= 0){
+                    count_text = 22;
+                }
+                
+
+                let audio=[];
+                for (i=0; i<count; i++){
+                    audio[i] = new Audio(`mp3/N3_test1/${i+1}.mp3`);
+
+                    audio[i].onended = () =>{
+                        btn_back.disabled = false;
+                        btn_next.disabled = false;
+                        btn_repeat.disabled = false;
+
+                        btn_back.style.backgroundColor="";
+                    }
+                    audio[i].playbackRate = currentSpeed;
+
+                }
+
+                // khóa nút next và chờ gỡ (vì sợ nhấn bị lập)
+                btn_back.disabled = true;
+                btn_next.disabled = true;
+                btn_repeat.disabled = true;
+
+                btn_back.style.backgroundColor="red";
+                console.log(count_text);
+
+                // Đợi 2000ms (2 giây) rồi mới phát
+                    setTimeout(() => {
+                        audio[count_text-1].play().catch(error => {
+                            console.error("Không thể phát âm thanh:", error);
+                            // Mở khóa lại nút nếu xảy ra lỗi (ví dụ sai đường dẫn file)
+                            btn.disabled = false;
+                        });
+                    }, 1000);
+
+
+
+                // gọi dữ liệu ra follow theo audio ra để in ra wed
+                lyris_data = ArrayLyris[count_text-1].lyris;
+                change_lyris_follow_audio(lyris_data);
+            }
+
+            // lập lại audio đang phát ---------------------------------------------------------------------------------------------------------------------------------------
+            function RepeatAudio() {
+                SpeedAudio();
+                if (count_text > 0){
+                    let audio=[];
+                    for (i=0; i<count; i++){
+                        audio[i] = new Audio(`mp3/N3_test1/${i+1}.mp3`);
+
+                        audio[i].onended = () =>{
+                            btn_back.disabled = false;
+                            btn_next.disabled = false;
+                            btn_repeat.disabled = false;
+
+                            btn_repeat.style.backgroundColor="";
+                        }
+                        audio[i].playbackRate = currentSpeed;
+
+                    }
+
+                    // khóa nút next và chờ gỡ (vì sợ nhấn bị lập)
+                    btn_back.disabled = true;
+                    btn_next.disabled = true;
+                    btn_repeat.disabled = true;
+
+                    btn_repeat.style.backgroundColor="red";
+                    console.log(count_text);
+
+                    // Đợi 2000ms (2 giây) rồi mới phát
+                        setTimeout(() => {
+                            audio[count_text-1].play().catch(error => {
+                                console.error("Không thể phát âm thanh:", error);
+                                // Mở khóa lại nút nếu xảy ra lỗi (ví dụ sai đường dẫn file)
+                                btn.disabled = false;
+                            });
+                        }, 1000);
+
+                }else {
+                    
+                }
+                }
+                
+
+
+
+
+
+
+       </script>
+    </body>
+</html>
