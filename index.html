@@ -26,6 +26,11 @@
                 background-color: antiquewhite;
                 z-index: 10;
             }
+            .speed-label {
+                font-size: 20px;
+                font-weight: 800;
+                color: greenyellow;
+            }
 
         </style>
     </head>
@@ -50,12 +55,19 @@
                     <div class="speed-title">Nhập tốc độ phát mong muốn</div>
                     <div class="speed-input"><input type="number" id="speed-input" value="1" step="0.1" min="0.5" max="3.0"></div>
                 </div>
+                <div class="daura">
+                    <div class="daura-button"><button onclick="SpeedAudio()">SET</button></div>
+                    <div class="speed-thucte" id="speed-thucte">
+                        <!-- thông tin từ js -->
+                    </div>
+                </div>
             </div>
         </div>
         <!-- API -->
        <script>
 
             let html= "";
+            let html1= "";
             let count = 0;
             let count_text = 0;
             let lyris_data ="";
@@ -120,11 +132,13 @@
 
             
 
+
             // hàm nhập tốc độ của audio 
 
             function SpeedAudio(){
-                speed_input.addEventListener("input", function(){
-                    const val = parseFloat(this.value);
+
+                    let html1 = "";
+                    const val = parseFloat(document.getElementById('speed-input').value);
 
                     // Chỉ cập nhật khi số hợp lệ (từ 0.5 đến 4.0)
                     if (!isNaN(val) && val >= 0.5 && val <= 4.0) {
@@ -135,10 +149,20 @@
                         //     audio[i].playbackRate = currentSpeed;
                         // }
                     }
+
+                    // hiện tốc độ thực tế
+                    html1 +=`
+                        <p class="speed-label">${currentSpeed}</p>
+
+                    `;
+                    document.getElementById("speed-thucte").innerHTML = html1;
+
                     
-                })
                 console.log("speed hiện tại:", currentSpeed);
             }
+
+           
+
 
 
 
@@ -172,7 +196,6 @@
 
             // tiếp tục phát audio tiếp theo ---------------------------------------------------------------------------------------------------------------------------------------
             function NextAudio() {
-                SpeedAudio();
                 change_lyris_follow_audio();
                 count_text = count_text + 1;
                 if (count_text > count ){
@@ -220,7 +243,6 @@
 
             // quay lại audio trước đó ---------------------------------------------------------------------------------------------------------------------------------------
             function BackAudio() {
-                SpeedAudio();
                 count_text = count_text - 1;
                 if (count_text <= 0){
                     count_text = 22;
@@ -257,7 +279,7 @@
                             // Mở khóa lại nút nếu xảy ra lỗi (ví dụ sai đường dẫn file)
                             btn.disabled = false;
                         });
-                    }, 1000);
+                    }, 500);
 
 
 
@@ -268,7 +290,6 @@
 
             // lập lại audio đang phát ---------------------------------------------------------------------------------------------------------------------------------------
             function RepeatAudio() {
-                SpeedAudio();
                 if (count_text > 0){
                     let audio=[];
                     for (i=0; i<count; i++){
