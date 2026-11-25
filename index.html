@@ -91,29 +91,38 @@
                 {stt: "3", lyris: "どうしてKAIZEN学校をえらびましたか" },
                 {stt: "4", lyris: "日本でどのくらい働きますか。どうしてですか。" },
                 {stt: "5", lyris: "将来、日本でどんな仕事がしたいですか" },
-                {stt: "6", lyris: "" },
-                {stt: "7", lyris: "" },
-                {stt: "8", lyris: "" },
-                {stt: "9", lyris: "" },
-                {stt: "10", lyris: "" },
-                {stt: "11", lyris: "" },
-                {stt: "12", lyris: "" },
-                {stt: "13", lyris: "" },
-                {stt: "14", lyris: "" },
-                {stt: "15", lyris: "" },
-                {stt: "16", lyris: "" },
-                {stt: "17", lyris: "" },
-                {stt: "18", lyris: "" },
-                {stt: "19", lyris: "" },
-                {stt: "20", lyris: "" },
-                {stt: "21", lyris: "" },
-                {stt: "22", lyris: "" },
-
+                {stt: "6", lyris: "6" },
+                {stt: "7", lyris: "7" },
+                {stt: "8", lyris: "8" },
+                {stt: "9", lyris: "9" },
+                {stt: "10", lyris: "10" },
+                {stt: "11", lyris: "11" },
+                {stt: "12", lyris: "12" },
+                {stt: "13", lyris: "13" },
+                {stt: "14", lyris: "14" },
+                {stt: "15", lyris: "15" },
+                {stt: "16", lyris: "16" },
+                {stt: "17", lyris: "17" },
+                {stt: "18", lyris: "18" },
+                {stt: "19", lyris: "19" },
+                {stt: "20", lyris: "20" },
+                {stt: "21", lyris: "21" },
+                {stt: "22", lyris: "22" },
             ];
 
             // điếm phần tử của lyris
             let a = ArrayLyris.length;
             console.log(a);
+
+            // hàm random 
+            for (let i = ArrayLyris.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [ArrayLyris[i], ArrayLyris[j]] = [ArrayLyris[j], ArrayLyris[i]];
+            }
+
+            const newArray = ArrayLyris;
+            console.log(newArray);
+            console.log("flex: ", newArray[1].stt);
 
             // hàm thay đổi lyris theo audio
             function change_lyris_follow_audio(text_data){
@@ -201,10 +210,9 @@
                 if (count_text > count ){
                     count_text = 1;
                 }
-
                 let audio=[];
                 for (i=0; i<count; i++){
-                    audio[i] = new Audio(`mp3/N3_test1/${i+1}.mp3`);
+                    audio[i] = new Audio(`mp3/N3_test1/${newArray[i].stt}.mp3`);
 
                     audio[i].onended = () =>{
                         btn_next.disabled = false;
@@ -237,7 +245,7 @@
 
 
                 // gọi dữ liệu ra follow theo audio ra để in ra wed
-                lyris_data = ArrayLyris[count_text-1].lyris;
+                lyris_data = newArray[count_text-1].lyris;
                 change_lyris_follow_audio(lyris_data);
             }
 
@@ -251,7 +259,7 @@
 
                 let audio=[];
                 for (i=0; i<count; i++){
-                    audio[i] = new Audio(`mp3/N3_test1/${i+1}.mp3`);
+                    audio[i] = new Audio(`mp3/N3_test1/${newArray[i].stt}.mp3`);
 
                     audio[i].onended = () =>{
                         btn_back.disabled = false;
@@ -284,7 +292,7 @@
 
 
                 // gọi dữ liệu ra follow theo audio ra để in ra wed
-                lyris_data = ArrayLyris[count_text-1].lyris;
+                lyris_data = newArray[count_text-1].lyris;
                 change_lyris_follow_audio(lyris_data);
             }
 
@@ -293,7 +301,7 @@
                 if (count_text > 0){
                     let audio=[];
                     for (i=0; i<count; i++){
-                        audio[i] = new Audio(`mp3/N3_test1/${i+1}.mp3`);
+                        audio[i] = new Audio(`mp3/N3_test1/${newArray[i].stt}.mp3`);
 
                         audio[i].onended = () =>{
                             btn_back.disabled = false;
